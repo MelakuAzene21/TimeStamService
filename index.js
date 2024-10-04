@@ -1,4 +1,3 @@
-// index.js
 const express = require('express');
 const cors = require('cors');
 
@@ -28,7 +27,7 @@ app.get("/api/:date?", (req, res) => {
     });
   }
 
-  // Check if the date is a valid number (Unix timestamp)
+  // Check if the date string is a valid Unix timestamp (number)
   if (!isNaN(dateString)) {
     const unixTimestamp = parseInt(dateString);
     const date = new Date(unixTimestamp);
