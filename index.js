@@ -30,7 +30,10 @@ app.get("/api/:date?", (req, res) => {
   // Check if the date string is a valid Unix timestamp (number)
   if (!isNaN(dateString)) {
     const unixTimestamp = parseInt(dateString);
-    const date = new Date(unixTimestamp);
+
+    // Ensure the timestamp is treated as milliseconds if it's in seconds format
+    const date = new Date(unixTimestamp > 9999999999 ? unixTimestamp : unixTimestamp * 1000);
+
     return res.json({
       unix: date.getTime(),
       utc: date.toUTCString()
@@ -39,10 +42,13 @@ app.get("/api/:date?", (req, res) => {
 
   // Try to parse a standard date string
   const date = new Date(dateString);
+
+  // Handle invalid date
   if (date.toString() === "Invalid Date") {
     return res.json({ error: "Invalid Date" });
   }
 
+  // Return valid date response
   res.json({
     unix: date.getTime(),
     utc: date.toUTCString()
