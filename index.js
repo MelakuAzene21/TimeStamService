@@ -1,3 +1,4 @@
+// index.js
 const express = require('express');
 const cors = require('cors');
 
@@ -16,47 +17,35 @@ app.get("/", (req, res) => {
 
 // API route for timestamps
 app.get("/api/:date?", (req, res) => {
-  let dateString = req.params.date;
+  let dateParam = req.params.date;
 
-  // If no date is provided, return the current timestamp
-  if (!dateString) {
-    const currentDate = new Date();
-    return res.json({
-      unix: currentDate.getTime(),
-      utc: currentDate.toUTCString()
-    });
+  // If no date is provided, use the current date
+  let date;
+  if (!dateParam) {
+    date = new Date();
+  } else {
+    // Check if dateParam is a Unix timestamp or a string
+    if (!isNaN(dateParam)) {
+      // If it's a number (timestamp in milliseconds), convert it to an integer
+      dateParam = parseInt(dateParam);
+    }
+    // Attempt to parse the dateParam using the JavaScript Date constructor
+    date = new Date(dateParam);
   }
 
-  // Check if the date string is a valid Unix timestamp (number)
-  if (!isNaN(dateString)) {
-    const unixTimestamp = parseInt(dateString);
-
-    // Ensure the timestamp is treated as milliseconds if it's in seconds format
-    const date = new Date(unixTimestamp > 9999999999 ? unixTimestamp : unixTimestamp * 1000);
-
-    return res.json({
-      unix: date.getTime(),
-      utc: date.toUTCString()
-    });
-  }
-
-  // Try to parse a standard date string
-  const date = new Date(dateString);
-
-  // Handle invalid date
+  // Check for invalid date
   if (date.toString() === "Invalid Date") {
     return res.json({ error: "Invalid Date" });
   }
 
-  // Return valid date response
+  // Return the Unix and UTC time formats
   res.json({
     unix: date.getTime(),
     utc: date.toUTCString()
   });
 });
 
-// Start the server on port 3000
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`App is running on port ${port}`);
+// Start the server and listen on the environment's port or 3000
+const listener = app.listen(process.env.PORT || 3000, () => {
+  console.log(`Your app is listening on port ${listener.address().port}`);
 });
