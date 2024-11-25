@@ -15,21 +15,19 @@ app.get("/", (req, res) => {
 });
 
 // API route for timestamps
-app.get("/api/:date?", (req, res) => {
-  let dateParam = req.params.date;
-
-  // If no date is provided, use the current date
+app.get("/api/:date_string?", (req, res) => {
   let date;
-  if (!dateParam) {
+  const dateString = req.params.date_string;
+
+  if (!dateString) {
     date = new Date();
   } else {
-    // Check if dateParam is a Unix timestamp or a string
-    if (!isNaN(dateParam)) {
-      // If it's a number (timestamp in milliseconds), convert it to an integer
-      dateParam = parseInt(dateParam);
+    // Check if the dateString is a Unix timestamp or an ISO date string
+    if (!isNaN(dateString)) {
+      date = new Date(parseInt(dateString));
+    } else {
+      date = new Date(dateString);
     }
-    // Attempt to parse the dateParam using the JavaScript Date constructor
-    date = new Date(dateParam);
   }
 
   // Check for invalid date
